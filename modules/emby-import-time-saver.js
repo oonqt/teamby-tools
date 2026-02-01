@@ -1,16 +1,13 @@
-import axios from 'axios';
 import ms from 'ms';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { required, optionalBool } from '../env.js';
 
-export const version = '1.0.1';
+export const version = '1.0.2';
 
 export const start = async (ctx) => {
-    const { app, log } = ctx;   
+    const { app, log, emby } = ctx;   
 
-    const EMBY_URL = required('EMBY_URL');
-    const EMBY_API_KEY = required('EMBY_API_KEY');
     const EMBY_LIBRARY_VIEW_USER = required('EMBY_LIBRARY_VIEW_USER');
     const DB_PATH = required('DB_PATH');
     const SYNC_INTERVAL = required('SYNC_INTERVAL');
@@ -19,13 +16,6 @@ export const start = async (ctx) => {
     
     const adapter = new JSONFile(DB_PATH);
     const db = new Low(adapter, { movies: {} });
-    
-    const emby = axios.create({
-        baseURL: `${EMBY_URL}/emby`,
-        headers: {
-            "X-Emby-Token": EMBY_API_KEY
-        }
-    });
     
     const getMovieEntry = providerId => db.data.movies[providerId];
     

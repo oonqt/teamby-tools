@@ -5,7 +5,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { compareVersions, validate } from 'compare-versions';
 import { emojify } from 'node-emoji';
-import { required } from '../env';
+import { required } from '../env.js';
 
 const MAX_MESSAGE_BYTES = 4000;
 
@@ -21,7 +21,7 @@ export const start = async (ctx) => {
     const DB_FILE = required('DB_FILE');
     const GH_API_KEY = required('GH_API_KEY'); 
 
-    axios.defaults.headers.common['User-Agent'] = `${pkg.name}/${pkg.version}`;
+    axios.defaults.headers.common['User-Agent'] = `gh-release-watcher/${version}`;
     axios.defaults.headers.common['Authorization'] = `Bearer ${GH_API_KEY}`;
 
     const adapter = new JSONFile(DB_FILE);

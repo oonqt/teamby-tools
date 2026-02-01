@@ -1,15 +1,12 @@
 import { qBittorrentClient } from '@robertklep/qbittorrent';
-import axios from 'axios';
 import ip from 'ip';
 import { required, optional } from '../env.js';
 
-export const version = "1.3.2";
+export const version = "1.3.3";
 
 export const start = (ctx) => {
-    const { log } = ctx;
+    const { log, emby } = ctx;
 
-    const EMBY_URL = required('EMBY_URL');
-    const EMBY_API_KEY = required('EMBY_API_KEY');
     const QBIT_HOST = required('QBIT_HOST');
     const QBIT_USER = required('QBIT_USER');
     const QBIT_PASS = required('QBIT_PASS');
@@ -17,12 +14,6 @@ export const start = (ctx) => {
     const LOCAL_SUBNET = required('LOCAL_SUBNET');
     
     const qbitClient = new qBittorrentClient(QBIT_HOST, QBIT_USER, QBIT_PASS);
-    const embyClient = axios.create({
-        baseURL: `${EMBY_URL}/emby`,
-        headers: {
-            "X-Emby-Token": EMBY_API_KEY
-        }
-    });
     
     const isLocalIP = (addr, subnet) => ip.cidrSubnet(subnet).contains(addr) || ip.isLoopback(addr);
     
@@ -30,9 +21,9 @@ export const start = (ctx) => {
         log.debug('Checking for sessions....');    
     
         try {
-            const downloads = (await embyClient('/Sync/Jobs')).data;
+            const downloads = (await emby('/Sync/Jobs')).data;
             const downloadsInTransfer = downloads.Items.filter(download => download.Status === "Transferring");
-            const sessions = (await embyClient('/Sessions')).data;
+            const sessions = (await emby('/Sessions')).data;
             const usingAltSpeeds = Boolean(Number(await qbitClient.transfer.speedLimitsMode()));
     
             let remoteDownload = null;

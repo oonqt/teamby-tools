@@ -1,13 +1,11 @@
 import axios from 'axios';
 import { required } from '../env.js';
 
-export const version = "1.0.2";
+export const version = "1.0.3";
 
 export const start = async (ctx) => {
-    const { app, log } = ctx;
+    const { app, log, emby } = ctx;
 
-    const EMBY_URL = required('EMBY_URL');
-    const EMBY_KEY = required('EMBY_API_KEY');
     const RADARR_URL = required('RADARR_URL');
     const RADARR_KEY = required('RADARR_KEY');
     const ROOT_FOLDER_PATH = required('ROOT_FOLDER_PATH');
@@ -18,12 +16,6 @@ export const start = async (ctx) => {
         baseURL: `${RADARR_URL}/api/v3`,
         headers: {
             "X-Api-Key": RADARR_KEY
-        }
-    });
-    const embyApi = axios.create({
-        baseURL: `${EMBY_URL}/emby`,
-        headers: {
-            "X-Emby-Token": EMBY_KEY
         }
     });
             
@@ -99,14 +91,14 @@ export const start = async (ctx) => {
     async function sendEmbyMessage(userId, message) {
         return new Promise(async (resolve, reject) => {
             try {
-                const sessions = (await embyApi('/Sessions')).data;
+                const sessions = (await emby('/Sessions')).data;
                 const activeUserSessions = sessions.filter(session =>
                     session.UserId === userId
                     && (new Date() - new Date(session.LastActivityDate)) < 30000
                 );
             
                 for (const session of activeUserSessions) {
-                    await embyApi.post(`/Sessions/${session.Id}/Message?Header=Trailer Download System&Text=${message}`);
+                    await emby.post(`/Sessions/${session.Id}/Message?Header=Trailer Download System&Text=${message}`);
                 }
     
                 resolve();

@@ -1,8 +1,9 @@
 import express from 'express';
 import morgan from 'morgan';
+import axios from 'axios';
 import Logger from './logger.js';
 import fs from 'fs';
-import { optionalBool, optional } from './env.js';
+import { optionalBool, optional, required } from './env.js';
 import pkg from './package.json' with { type: 'json' };
 
 const IS_DEV = process.env.NODE_ENV === 'development';
@@ -14,10 +15,17 @@ if (IS_DEV) {
 
 const PORT = optional('PORT', 3001);
 const DEBUG = optionalBool('DEBUG', false);
-
+const EMBY_URL = required('EMBY_URL');
+const EMBY_API_KEY = required('EMBY_API_KEY');
 
 const log = new Logger('tools-main', DEBUG);
 const app = express();
+const emby = axios.create({
+    baseURL: `${EMBY_URL}/emby`,
+    headers: {
+        "X-Emby-Token": EMBY_API_KEY
+    }
+});
 
 app.use(express.json());
 app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
@@ -34,7 +42,7 @@ const startModule = async (name, loader) => {
     const module = await loader();
     const serviceLog = log.child(name);
     
-    module.start({ app, log: serviceLog });
+    module.start({ app, emby, log: serviceLog });
     
     serviceLog.info(`Started ${name}_v${module.version}`);
 };
