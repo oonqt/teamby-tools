@@ -15,11 +15,11 @@ if (IS_DEV) {
 const PORT = optional('PORT', 3001);
 const DEBUG = optionalBool('DEBUG', false);
 
-const log = new Logger('tools-main', DEBUG);
-
 log.info(`Starting main application in ${IS_DEV ? 'development' : 'production'} mode, v${pkg.version}`);
 
+const log = new Logger('tools-main', DEBUG);
 const app = express();
+
 app.use(express.json());
 app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
     stream: {
@@ -30,14 +30,14 @@ app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
-    log.info(`Starting module: ${name}`);
+    log.info(`Starting module: ${name}_v${module.version}`);
 
     const module = await loader();
     const serviceLog = log.child(name);
-
-    serviceLog.info(`Starting ${name} v${module.version}`);
-
+    
     module.start({ app, log: serviceLog });
+    
+    serviceLog.info(`Started ${name}`);
 };
 
 const moduleFiles = fs.readdirSync('./modules').filter(f => f.endsWith('.js'));
