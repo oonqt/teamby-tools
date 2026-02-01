@@ -13,8 +13,8 @@ export const start = async (ctx) => {
     const EMBY_API_KEY = required('EMBY_API_KEY');
     const EMBY_LIBRARY_VIEW_USER = required('EMBY_LIBRARY_VIEW_USER');
     const DB_PATH = required('DB_PATH');
-    const SYNC_INTERVAL = required('SYNC_INTERVAL'); // e.g. "15m"
-    const FORGET_TIME = required('FORGET_TIME');     // e.g. "30d"
+    const SYNC_INTERVAL = required('SYNC_INTERVAL');
+    const FORGET_TIME = required('FORGET_TIME');
     const PERFORM_INITIAL_SYNC = optionalBool('PERFORM_INITIAL_SYNC', false);
     
     const adapter = new JSONFile(DB_PATH);

@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import Logger from './logger.js';
 import fs from 'fs';
 import { optionalBool, optional } from './env.js';
+import pkg from './package.json' with { type: 'json' };
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -16,7 +17,7 @@ const DEBUG = optionalBool('DEBUG', false);
 
 const log = new Logger('tools-main', DEBUG);
 
-log.info(`Starting main application in ${IS_DEV ? 'development' : 'production'} mode`);
+log.info(`Starting main application in ${IS_DEV ? 'development' : 'production'} mode, v${pkg.version}`);
 
 const app = express();
 app.use(express.json());
