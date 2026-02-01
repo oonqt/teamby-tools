@@ -15,7 +15,6 @@ if (IS_DEV) {
 const PORT = optional('PORT', 3001);
 const DEBUG = optionalBool('DEBUG', false);
 
-log.info(`Starting main application in ${IS_DEV ? 'development' : 'production'} mode, v${pkg.version}`);
 
 const log = new Logger('tools-main', DEBUG);
 const app = express();
@@ -31,7 +30,7 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
     log.info(`Starting module: ${name}_v${module.version}`);
-
+    
     const module = await loader();
     const serviceLog = log.child(name);
     
@@ -39,6 +38,8 @@ const startModule = async (name, loader) => {
     
     serviceLog.info(`Started ${name}`);
 };
+
+log.info(`Starting modules - ${pkg.name}_v${pkg.version}`);
 
 const moduleFiles = fs.readdirSync('./modules').filter(f => f.endsWith('.js'));
 
