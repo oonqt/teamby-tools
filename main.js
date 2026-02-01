@@ -2,7 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import Logger from './logger.js';
 import fs from 'fs';
-import { optional, required } from './env.js';
+import { optionalBool, optionalInt } from './env.js';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -11,8 +11,8 @@ if (IS_DEV) {
     dotenv.config();
 }
 
-const PORT = optional('PORT', 3001);
-const DEBUG = optional('DEBUG', false);
+const PORT = optionalInt('PORT', 3001);
+const DEBUG = optionalBool('DEBUG', false);
 
 const log = new Logger('tools-main', DEBUG);
 
@@ -27,7 +27,7 @@ app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
-    console.log(`Starting module: ${name}`);
+    log.info(`Starting module: ${name}`);
 
     const module = await loader();
     const serviceLog = log.child(name);

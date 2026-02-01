@@ -2,7 +2,7 @@ import axios from 'axios';
 import ms from 'ms';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
-import { required, optional } from '../env.js';
+import { required, optionalBool } from '../env.js';
 
 export const version = '1.0.1';
 
@@ -15,7 +15,7 @@ export const start = async (ctx) => {
     const DB_PATH = required('DB_PATH');
     const SYNC_INTERVAL = required('SYNC_INTERVAL'); // e.g. "15m"
     const FORGET_TIME = required('FORGET_TIME');     // e.g. "30d"
-    const PERFORM_INITIAL_SYNC = optional('PERFORM_INITIAL_SYNC', false);
+    const PERFORM_INITIAL_SYNC = optionalBool('PERFORM_INITIAL_SYNC', false);
     
     const adapter = new JSONFile(DB_PATH);
     const db = new Low(adapter, { movies: {} });
@@ -232,6 +232,6 @@ export const start = async (ctx) => {
     await db.read();
     
     // Begin Syncing
-    if (PERFORM_INITIAL_SYNC?.toLowerCase() === 'true') sync();
+    if (PERFORM_INITIAL_SYNC) sync();
     setInterval(sync, ms(SYNC_INTERVAL));
 }
