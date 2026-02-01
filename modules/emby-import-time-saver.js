@@ -2,6 +2,7 @@ import axios from 'axios';
 import ms from 'ms';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
+import { required, optional } from '../env.js';
 
 export const version = '1.0.1';
 
@@ -14,7 +15,7 @@ export const start = async (ctx) => {
     const DB_PATH = required('DB_PATH');
     const SYNC_INTERVAL = required('SYNC_INTERVAL'); // e.g. "15m"
     const FORGET_TIME = required('FORGET_TIME');     // e.g. "30d"
-    const PERFORM_INITIAL_SYNC = optionalBool('PERFORM_INITIAL_SYNC', false);
+    const PERFORM_INITIAL_SYNC = optional('PERFORM_INITIAL_SYNC', false);
     
     const adapter = new JSONFile(DB_PATH);
     const db = new Low(adapter, { movies: {} });
@@ -194,6 +195,8 @@ export const start = async (ctx) => {
         const body = req.body;
         const event = body.Event;
         const item = body.Item;
+
+        if (event === 'system.notificationtest') return res.sendStatus(200);
     
         if (event !== 'library.new') {
             log.info(`Unhandled event received: ${event}`);

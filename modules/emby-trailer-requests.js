@@ -33,6 +33,8 @@ export const start = async (ctx) => {
         const item = body.Item;
     
         try {
+            if (body.Event === 'system.notificationtest') return res.sendStatus(200);
+
             if (body.Event !== 'item.rate') return next();
             if (item.Type !== 'Trailer') return next();
             if (!item.UserData.IsFavorite) return next();
