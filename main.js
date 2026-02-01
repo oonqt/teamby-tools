@@ -2,7 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import Logger from './logger.js';
 import fs from 'fs';
-import { optionalBool, optionalInt } from './env.js';
+import { optionalBool, optional } from './env.js';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -11,7 +11,7 @@ if (IS_DEV) {
     dotenv.config();
 }
 
-const PORT = optionalInt('PORT', 3001);
+const PORT = optional('PORT', 3001);
 const DEBUG = optionalBool('DEBUG', false);
 
 const log = new Logger('tools-main', DEBUG);
