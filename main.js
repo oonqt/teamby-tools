@@ -29,14 +29,14 @@ app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
-    log.info(`Starting module: ${name}_v${module.version}`);
+    log.info(`Starting module: ${name}`);
     
     const module = await loader();
     const serviceLog = log.child(name);
     
     module.start({ app, log: serviceLog });
     
-    serviceLog.info(`Started ${name}`);
+    serviceLog.info(`Started ${name}_v${module.version}`);
 };
 
 log.info(`Starting modules - ${pkg.name}_v${pkg.version}`);
