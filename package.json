@@ -1,0 +1,34 @@
+{
+  "name": "teamby-tools",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/oonqt/teamby-tools#readme",
+  "bugs": {
+    "url": "https://github.com/oonqt/teamby-tools/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oonqt/teamby-tools.git"
+  },
+  "license": "MIT",
+  "author": "Rechigo",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "nodemon .",
+    "start": "node ."
+  },
+  "dependencies": {
+    "@robertklep/qbittorrent": "^1.0.1",
+    "axios": "^1.13.4",
+    "express": "^5.2.1",
+    "ip": "^2.0.1",
+    "lowdb": "^7.0.1",
+    "morgan": "^1.10.1",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.3",
+    "nodemon": "^3.1.11"
+  }
+}
