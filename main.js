@@ -16,6 +16,8 @@ const DEBUG = optionalBool('DEBUG', false);
 
 const log = new Logger('tools-main', DEBUG);
 
+log.info(`Starting main application in ${IS_DEV ? 'development' : 'production'} mode`);
+
 const app = express();
 app.use(express.json());
 app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
