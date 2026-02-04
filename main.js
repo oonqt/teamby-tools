@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import axios from 'axios';
+import path from 'path';
 import Logger from './logger.js';
 import fs from 'fs';
 import { optionalBool, optional, required } from './env.js';
@@ -17,6 +18,7 @@ const PORT = optional('PORT', 3001);
 const DEBUG = optionalBool('DEBUG', false);
 const EMBY_URL = required('EMBY_URL');
 const EMBY_API_KEY = required('EMBY_API_KEY');
+const DISABLED_MODULES = optional('DISABLED_MODULES', '').split(',').map(m => m.trim());
 
 const log = new Logger('tools-main', DEBUG);
 const app = express();
@@ -37,7 +39,7 @@ app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
 app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
-    log.info(`Starting module: ${name}`);
+    log.info(`Starting: ${name}`);
     
     const module = await loader();
     const serviceLog = log.child(name);
@@ -47,12 +49,12 @@ const startModule = async (name, loader) => {
     serviceLog.info(`Started ${name}_v${module.version}`);
 };
 
-log.info(`Starting modules - ${pkg.name}_v${pkg.version}`);
+log.info(`${pkg.name}_v${pkg.version} starting...`);
 
 const moduleFiles = fs.readdirSync('./modules').filter(f => f.endsWith('.js'));
 
 for (const file of moduleFiles) {
-    await startModule(file, () => import(`./modules/${file}`));
+    await startModule(file, async () => await import(`./modules/${file}`));
 }
 
 app.listen(PORT, () => log.info(`Server listening on port ${PORT}`));
