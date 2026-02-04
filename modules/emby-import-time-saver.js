@@ -3,7 +3,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { required, optionalBool } from '../env.js';
 
-export const version = '1.0.2';
+export const version = '1.0.3';
 
 export const start = async (ctx) => {
     const { app, log, emby } = ctx;   
@@ -172,6 +172,8 @@ export const start = async (ctx) => {
                     await deleteMovieEntry(providerId);
                     missing--;
                     deleted++;
+                } else {
+                    log.debug(`Found missing media ${providerId} -- last seen at ${entry.lastSeen}`);
                 }
             }
     
