@@ -6,6 +6,7 @@ import Logger from './logger.js';
 import fs from 'fs';
 import { optionalBool, optional, required } from './env.js';
 import pkg from './package.json' with { type: 'json' };
+import { fileURLToPath } from 'url';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -40,21 +41,29 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 
 const startModule = async (name, loader) => {
     log.info(`Starting: ${name}`);
-    
+
     const module = await loader();
     const serviceLog = log.child(name);
-    
+
     module.start({ app, emby, log: serviceLog });
-    
+
     serviceLog.info(`Started ${name}_v${module.version}`);
 };
 
 log.info(`${pkg.name}_v${pkg.version} starting...`);
 
-const moduleFiles = fs.readdirSync('./modules').filter(f => f.endsWith('.js'));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const modulesDir = path.join(dirname, 'modules');
+const moduleFiles = fs.readdirSync(modulesDir).filter(f => f.endsWith('.js'));
 
 for (const file of moduleFiles) {
-    await startModule(file, async () => await import(`./modules/${file}`));
+    if (DISABLED_MODULES.includes(file.replace('.js', ''))) {
+        log.info(`Skipping disabled module: ${file}`);
+        continue;
+    }
+
+    const modulePath = path.join(modulesDir, file);
+    await startModule(file, () => import(modulePath));
 }
 
 app.listen(PORT, () => log.info(`Server listening on port ${PORT}`));
