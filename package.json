@@ -1,6 +1,6 @@
 {
   "name": "teamby-tools",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "A collection of all of the scripts I made/use for my media server to cut down on memory usage running multiple containers",
   "homepage": "https://github.com/oonqt/teamby-tools#readme",
   "bugs": {

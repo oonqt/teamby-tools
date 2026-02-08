@@ -39,15 +39,13 @@ app.use(morgan(IS_DEV ? 'dev' : 'tiny', {
 
 app.get('/health', (_, res) => res.json({ ok: true }));
 
-const startModule = async (name, loader) => {
-    log.info(`Starting: ${name}`);
-
-    const module = await loader();
+const startModule = async (name, file) => {
+    const module = await import(file);
     const serviceLog = log.child(name);
 
-    module.start({ app, emby, log: serviceLog });
+    log.info(`Starting ${name}_v${module.version}`);
 
-    serviceLog.info(`Started ${name}_v${module.version}`);
+    module.start({ app, emby, log: serviceLog });
 };
 
 log.info(`${pkg.name}_v${pkg.version} starting...`);
@@ -57,13 +55,15 @@ const modulesDir = path.join(dirname, 'modules');
 const moduleFiles = fs.readdirSync(modulesDir).filter(f => f.endsWith('.js'));
 
 for (const file of moduleFiles) {
-    if (DISABLED_MODULES.includes(file.replace('.js', ''))) {
+    const moduleName = file.replace('.js', '');
+
+    if (DISABLED_MODULES.includes(moduleName)) {
         log.info(`Skipping disabled module: ${file}`);
         continue;
     }
 
-    const modulePath = path.join(modulesDir, file);
-    await startModule(file, () => import(modulePath));
+    const moduleFile = path.join(modulesDir, file);
+    await startModule(moduleName, moduleFile);
 }
 
 app.listen(PORT, () => log.info(`Server listening on port ${PORT}`));
