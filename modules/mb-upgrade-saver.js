@@ -3,7 +3,7 @@ import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { required, optionalBool } from '../env.js';
 
-export const version = '1.0.3';
+export const version = '1.1.3';
 
 export const start = async (ctx) => {
     const { app, log, emby } = ctx;   
